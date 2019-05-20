@@ -4,43 +4,16 @@ import sys
 sys.setrecursionlimit(10000000)
 
 consistentTab = []
-def euler_generator(n, w):
+def generator(n, w):
     tab = []
     for i in range(n):
         tab.append([])
         for j in range(int(n)):
             tab[i].append(0)
-    x = 0
+    y = 0
     while list(set(list(range(len(tab)))) - set(consistentTab)):
         consistentTab.clear()
-        while x < n * (n - 1) / 2 * w:
-            a = random.randint(0, n-1)
-            b = random.randint(0, n-1)
-            c = random.randint(0, n-1)
-            while tab[a][b] == 1 or tab[a][c] == 1 or tab[b][c] == 1 or a == b or a==c or b==c:
-                a = random.randint(0, n-1)
-                b = random.randint(0, n-1)
-                c = random.randint(0, n-1)
-            tab[a][b] = 1
-            tab[b][a] = 1
-            tab[a][c] = 1
-            tab[c][a] = 1
-            tab[b][c] = 1
-            tab[c][b] = 1
-            x += 3
-        isConsistentRec(tab)
-    return tab
-
-def hamiltio_generator(n, w):
-    tab = []
-    for i in range(n):
-        tab.append([])
-        for j in range(int(n)):
-            tab[i].append(0)
-    while list(set(list(range(len(tab)))) - set(consistentTab)):
-        consistentTab.clear()
-        y = list(range(1,int((n * (n - 1) / 2 * w)-1)))
-        x = list(range(1,n))
+        x = list(range(1, n))
         random.shuffle(x)
         prev = 0
         for i in x:
@@ -51,14 +24,20 @@ def hamiltio_generator(n, w):
         tab[prev][0] = 1
         y = n
         while y < n * (n - 1) / 2 * w:
-            a = random.randint(0, n - 1)
-            b = random.randint(0, n - 1)
-            while tab[a][b] == 1 or a == b:
-                a = random.randint(0, n - 1)
-                b = random.randint(0, n - 1)
+            a = random.randint(0, n-1)
+            b = random.randint(0, n-1)
+            c = random.randint(0, n-1)
+            while tab[a][b] == 1 or tab[a][c] == 1 or tab[b][c] == 1 or a == b or a == c or b == c:
+                a = random.randint(0, n-1)
+                b = random.randint(0, n-1)
+                c = random.randint(0, n-1)
             tab[a][b] = 1
             tab[b][a] = 1
-            y += 1
+            tab[a][c] = 1
+            tab[c][a] = 1
+            tab[b][c] = 1
+            tab[c][b] = 1
+            y += 3
         isConsistentRec(tab)
     return tab
 
@@ -74,7 +53,7 @@ class Euler:
         self.tab = tab
         self.result = []
 
-    def euler_cycle(self, j):
+    def euler_cycle(self, j=0):
         for i in range(len(self.tab)):
             if self.tab[j][i] == 1:
                 self.tab[j][i] -= 1
@@ -103,13 +82,9 @@ class Hamilton:
                     return True
         return
 
-'''
-e=Euler(euler_generator(10,0.7))
-print(e.tab)
-e.euler_cycle(0)
-print(e.result)
-'''
-
-h=Hamilton(hamiltio_generator(25, 0.3))
+g=generator(10, 0.3)
+h=Hamilton(g)
+e=Euler(g)
 h.hamilton_cycle()
-print(h.tab, h.result)
+e.euler_cycle()
+print(h.result, e.result)
